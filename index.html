@@ -159,7 +159,7 @@ function render(){
 $(i?"b":"a").innerHTML=group.filter(r=>!filter||r.q>0).map(r=>`
 <tr class="${r.q>0?"active":""}">
 <td>${r.c}</td>
-<td class="price"><input inputmode="numeric" maxlength="2" value="${r.p}" oninput="update('${r.c}','p',this)" onblur="this.value=rows.find(r=>r.c==='${r.c}').p"></td>
+<td class="price"><input inputmode="numeric" maxlength="6" value="${r.p}" oninput="update('${r.c}','p',this)" onblur="this.value=rows.find(r=>r.c==='${r.c}').p"></td>
 <td><input inputmode="numeric" value="${r.q}" oninput="update('${r.c}','q',this)" onblur="this.value=rows.find(r=>r.c==='${r.c}').q"></td>
 <td>${money(r.q*r.p*1000)}</td>
 </tr>`).join("");
@@ -170,7 +170,7 @@ function update(c,k,el){
 let r=rows.find(r=>r.c===c);
 let n=Number(el.value);
 if(!Number.isSafeInteger(n)||n<0)return;
-if(k==="p"&&(n<10||n>99))return;
+if(k==="p"&&n<0)return;
 r[k]=n;
 let tr=el.closest("tr");
 tr.classList.toggle("active",r.q>0);
