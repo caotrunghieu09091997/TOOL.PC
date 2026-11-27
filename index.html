@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" translate="no">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google" content="notranslate">
 <title>TOOL 39 MÃ - PC PRO</title>
 <style>
 *{box-sizing:border-box}
@@ -26,7 +27,7 @@ button:disabled{background:#9ca3af}
 .green{background:#079447}
 .total{background:linear-gradient(1deg,#1689ff,#1643b6);color:white;text-align:center;padding:13px;border-radius:10px;margin-top:10px;font-weight:bold}
 .cash{background:linear-gradient(1deg,#20ba72,#08713c)}
-strong{display:block;font-size:30px;margin-top:7px}
+strong{display:block;font-size:30px;margin-top:7px;overflow-wrap:anywhere}
 .tables{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:12px}
 th{background:#1465d5;color:white;height:27px}
@@ -43,82 +44,124 @@ footer{background:#eaf3ff;padding:9px;margin-top:8px;border-radius:6px;font-weig
 </style>
 </head>
 <body>
+
 <h1>TOOL TỔNG TIỀN 39 MÃ – PC PRO</h1>
+
 <main>
 <section>
+
 <b>NHẬP DANH SÁCH ĐƠN</b>
+
 <div class="editor">
 <pre id="paint"></pre>
 <textarea id="entry" placeholder="Dán danh sách vào đây..." spellcheck="false"></textarea>
 </div>
+
 <div class="bar">
 <b class="good">Đơn đúng: <span id="ok">0</span></b>
 <b class="bad">Dòng sai: <span id="err">0</span></b>
 </div>
+
 <div class="bar">
 <button class="red" onclick="clean()">XÓA HẾT DÒNG ĐỎ</button>
-<button class="green" id="add" onclick="accumulate()" disabled>KIỂM TRA & CỘNG DỒN</button>
+<button class="green" id="add" onclick="accumulate()" disabled>KIỂM TRA &amp; CỘNG DỒN</button>
 </div>
+
 <div id="msg"></div>
-<div class="total">TỔNG SỐ ĐƠN<strong id="qty">0</strong></div>
-<div class="total cash">TỔNG SỐ TIỀN<strong id="cash">0đ</strong></div>
+
+<div class="total">
+TỔNG SỐ ĐƠN
+<strong id="qty">0</strong>
+</div>
+
+<div class="total cash">
+TỔNG SỐ TIỀN
+<strong id="cash">0đ</strong>
+</div>
+
 </section>
+
 <section id="right" class="hide">
+
 <div class="bar">
 <button id="pb" onclick="togglePrice()">HIỆN BẢNG GIÁ</button>
 <button id="fb" onclick="toggleFilter()">CHỈ HIỆN MÃ CÓ ĐƠN</button>
 </div>
+
 <div class="tables">
+
 <table>
-<thead><tr><th>MÃ</th><th class="price">GIÁ</th><th>SỐ LƯỢNG</th><th>THÀNH TIỀN</th></tr></thead>
+<thead>
+<tr>
+<th>MÃ</th>
+<th class="price">GIÁ (K)</th>
+<th>SỐ LƯỢNG</th>
+<th>THÀNH TIỀN</th>
+</tr>
+</thead>
 <tbody id="a"></tbody>
 </table>
+
 <table>
-<thead><tr><th>MÃ</th><th class="price">GIÁ</th><th>SỐ LƯỢNG</th><th>THÀNH TIỀN</th></tr></thead>
+<thead>
+<tr>
+<th>MÃ</th>
+<th class="price">GIÁ (K)</th>
+<th>SỐ LƯỢNG</th>
+<th>THÀNH TIỀN</th>
+</tr>
+</thead>
 <tbody id="b"></tbody>
 </table>
+
 </div>
+
 <footer id="summary"></footer>
+
 <div class="bar">
 <button class="green" onclick="copyTotal()">SAO CHÉP TỔNG</button>
 <button onclick="copyPrice()">SAO CHÉP GIÁ</button>
 <button class="red" onclick="resetQty()">XÓA SỐ LƯỢNG GIỮ GIÁ</button>
 </div>
+
 </section>
 </main>
+
 <script>
+
 const $=id=>document.getElementById(id);
+
 const catalog=[
 ["VP LK",100],
 ["VP SHOP",25],
 ["PV",100],
 ["MB",75],
 ["MSB",35],
-["MSB QD",60],
+["MSB qua đêm",60],
 ["LP",35],
 ["TP",50],
 ["VC",30],
 ["MBV",30],
-["BAC A 0 GD",20],
+["Bắc Á 0 GD",20],
 ["KB",25],
 ["SHB",40],
 ["GP 0 GD",17],
 ["GP QD",40],
-["GP 0 RUT",70],
-["VIB THE",35],
-["VIB 0 THE",25],
+["GP 0 rút",70],
+["VIB thẻ",35],
+["VIB 0 thẻ",25],
 ["TECH",25],
 ["VIKKI",17],
 ["KIS",20],
 ["HD 0 GD",17],
-["HD CO GD",20],
+["HD có GD",20],
 ["SEA",0],
 ["SCB",0],
 ["VB 0 GD",17],
-["VB CO GD",20],
-["VIET A 0 GD",17],
-["VIET A 0 RUT",70],
-["VIET A DL",0],
+["VB có GD",20],
+["Việt Á 0 GD",17],
+["Việt Á 0 rút",70],
+["Việt Á DL",0],
 ["BIDV",15],
 ["TPS",0],
 ["SSI",0],
@@ -129,37 +172,9 @@ const catalog=[
 ["HL",0],
 ["ACB",0]
 ];
-const codes=catalog.map(r=>r[0]);
-const sortedCodes=[...codes].sort((a,b)=>b.length-a.length);
-const storageKey="TOOLPC39V1";
-let rows=catalog.map(([c,p])=>({c,p,q:0}));
-let history=[],filter=false,show=false;
-
-try{
-let s=JSON.parse(localStorage.getItem(storageKey));
-if(s&&Array.isArray(s.rows)){
-rows.forEach(r=>{
-let old=s.rows.find(x=>x.c===r.c);
-if(old){
-if(Number.isSafeInteger(old.p)&&old.p>=0)r.p=old.p;
-if(Number.isSafeInteger(old.q)&&old.q>=0)r.q=old.q;
-}
-});
-history=Array.isArray(s.history)?s.history:[];
-}
-}catch(e){}
-
-function save(){
-try{
-localStorage.setItem(storageKey,JSON.stringify({rows,history}));
-}catch(e){
-$("msg").textContent="Không lưu được dữ liệu trên trình duyệt.";
-}
-}
-
-const money=n=>n.toLocaleString("vi-VN")+"đ";
 
 function normalize(s){
+
 return s.trim().toUpperCase()
 .normalize("NFD")
 .replace(/[\u0300-\u036f]/g,"")
@@ -167,155 +182,453 @@ return s.trim().toUpperCase()
 .replace(/\s+/g," ")
 .replace(/QUA DEM/g,"QD")
 .replace(/DAT LICH/g,"DL");
+
 }
 
+const codes=catalog.map(r=>normalize(r[0]));
+
+const sortedCodes=[...codes].sort(
+(a,b)=>b.length-a.length
+);
+
+const storageKey="TOOLPC39V1";
+
+let rows=catalog.map(([label,p])=>({
+c:normalize(label),
+label:label,
+p:p,
+q:0
+}));
+
+let history=[];
+let filter=false;
+let show=false;
+
+try{
+
+let s=JSON.parse(
+localStorage.getItem(storageKey)
+);
+
+if(s&&Array.isArray(s.rows)){
+
+rows.forEach(r=>{
+
+let old=s.rows.find(x=>
+typeof x.c==="string"&&normalize(x.c)===r.c
+);
+
+if(old){
+
+if(Number.isSafeInteger(old.p)&&old.p>=0){
+r.p=old.p;
+}
+
+if(Number.isSafeInteger(old.q)&&old.q>=0){
+r.q=old.q;
+}
+
+}
+
+});
+
+history=Array.isArray(s.history)?s.history:[];
+
+}
+
+}catch(e){}
+
+function save(){
+
+try{
+
+localStorage.setItem(
+storageKey,
+JSON.stringify({rows,history})
+);
+
+}catch(e){
+
+$("msg").textContent=
+"Không lưu được dữ liệu trên trình duyệt.";
+
+}
+
+}
+
+const money=n=>n.toLocaleString("vi-VN")+"đ";
+
 function parse(s){
+
 s=normalize(s);
+
 for(const c of sortedCodes){
-let m=s.match(new RegExp("^"+c+"\\s*[:X-]?\\s*(\\d+)$"));
-if(!m)m=s.match(new RegExp("^(\\d+)\\s*[:X-]?\\s*"+c+"$"));
+
+let m=s.match(
+new RegExp("^"+c+"\\s*[:X×-]?\\s*(\\d+)$")
+);
+
+if(!m){
+
+m=s.match(
+new RegExp("^(\\d+)\\s*[:X×-]?\\s*"+c+"$")
+);
+
+}
+
 if(m){
+
 let q=Number(m[1]);
-if(Number.isSafeInteger(q)&&q>0)return {c,q};
+
+if(Number.isSafeInteger(q)&&q>0){
+return {c,q};
 }
+
 }
+
+}
+
 return null;
+
 }
 
 function lines(){
+
 return $("entry").value.split("\n");
+
 }
 
 function sync(){
+
 $("paint").scrollTop=$("entry").scrollTop;
+
 $("paint").scrollLeft=$("entry").scrollLeft;
+
 }
 
 function check(){
+
 let g=0,b=0;
+
 $("paint").replaceChildren();
+
 lines().forEach((line,i)=>{
-if(i)$("paint").append("\n");
-let p=parse(line);
-let span=document.createElement("span");
-span.textContent=line;
-span.className=p?"good":"bad";
-$("paint").append(span);
-if(p)g+=p.q;
-else if(line.trim())b++;
-});
+
+if(i){
 $("paint").append("\n");
+}
+
+let p=parse(line);
+
+let span=document.createElement("span");
+
+span.textContent=line;
+
+span.className=p?"good":"bad";
+
+$("paint").append(span);
+
+if(p){
+
+g+=p.q;
+
+}else if(line.trim()){
+
+b++;
+
+}
+
+});
+
+$("paint").append("\n");
+
 $("ok").textContent=g;
+
 $("err").textContent=b;
+
 $("add").disabled=b>0||g===0;
+
 sync();
+
 }
 
 $("entry").oninput=check;
+
 $("entry").onscroll=sync;
 
 function clean(){
-$("entry").value=lines().filter(l=>parse(l)).join("\n");
+
+$("entry").value=
+lines().filter(l=>parse(l)).join("\n");
+
 check();
+
+$("msg").textContent="Đã xóa hết dòng đỏ.";
+
 }
 
 function accumulate(){
-let data=lines().filter(l=>l.trim()).map(parse);
-if(!data.length||data.some(p=>!p))return;
-let sums={};
-data.forEach(p=>sums[p.c]=(sums[p.c]||0)+p.q);
-let key=codes.map(c=>sums[c]||0).join(",");
-if(history.includes(key)){
-$("msg").textContent="Danh sách đã cộng trước đó!";
+
+let data=lines()
+.filter(l=>l.trim())
+.map(parse);
+
+if(!data.length||data.some(p=>!p)){
 return;
 }
-rows.forEach(r=>r.q+=sums[r.c]||0);
+
+let sums={};
+
+data.forEach(p=>{
+sums[p.c]=(sums[p.c]||0)+p.q;
+});
+
+let key=codes.map(c=>sums[c]||0).join(",");
+
+if(history.includes(key)){
+
+$("msg").textContent=
+"Danh sách đã cộng trước đó!";
+
+return;
+
+}
+
+rows.forEach(r=>{
+r.q+=sums[r.c]||0;
+});
+
 history.push(key);
+
 $("entry").value="";
+
 $("msg").textContent="Cộng dồn thành công!";
+
 save();
+
 render();
+
 check();
+
 }
 
 function totals(){
+
 let q=rows.reduce((s,r)=>s+r.q,0);
-let t=rows.reduce((s,r)=>s+r.q*r.p*1000,0);
-$("qty").textContent=q.toLocaleString("vi-VN");
+
+let t=rows.reduce(
+(s,r)=>s+r.q*r.p*1000,0
+);
+
+$("qty").textContent=
+q.toLocaleString("vi-VN");
+
 $("cash").textContent=money(t);
-$("summary").textContent="TỔNG ĐƠN: "+q+" | TỔNG TIỀN: "+money(t);
+
+$("summary").textContent=
+"TỔNG ĐƠN: "+q.toLocaleString("vi-VN")+
+" | TỔNG TIỀN: "+money(t);
+
 }
 
 function render(){
-[rows.slice(0,20),rows.slice(20)].forEach((group,i)=>{
-$(i?"b":"a").innerHTML=group.filter(r=>!filter||r.q>0).map(r=>`
+
+[rows.slice(0,20),rows.slice(20)]
+.forEach((group,i)=>{
+
+$(i?"b":"a").innerHTML=
+group.filter(r=>!filter||r.q>0)
+.map(r=>`
+
 <tr class="${r.q>0?"active":""}">
-<td>${r.c}</td>
+
+<td>${r.label}</td>
+
 <td class="price">
-<input inputmode="numeric" maxlength="6" value="${r.p}" oninput="update('${r.c}','p',this)" onblur="this.value=rows.find(r=>r.c==='${r.c}').p">
+
+<input
+type="text"
+inputmode="numeric"
+maxlength="6"
+value="${r.p}"
+oninput="update('${r.c}','p',this)"
+onblur="this.value=rows.find(r=>r.c==='${r.c}').p">
+
 </td>
+
 <td>
-<input inputmode="numeric" maxlength="9" value="${r.q}" oninput="update('${r.c}','q',this)" onblur="this.value=rows.find(r=>r.c==='${r.c}').q">
+
+<input
+type="text"
+inputmode="numeric"
+maxlength="9"
+value="${r.q}"
+oninput="update('${r.c}','q',this)"
+onblur="this.value=rows.find(r=>r.c==='${r.c}').q">
+
 </td>
+
 <td>${money(r.q*r.p*1000)}</td>
-</tr>`).join("");
+
+</tr>
+
+`).join("");
+
 });
+
 totals();
+
 }
 
 function update(c,k,el){
+
 let r=rows.find(r=>r.c===c);
-let n=Number(el.value);
-if(!Number.isSafeInteger(n)||n<0)return;
+
+if(!r)return;
+
+let max=k==="p"?6:9;
+
+el.value=el.value
+.replace(/\D/g,"")
+.slice(0,max);
+
+let n=Number(el.value)||0;
+
+if(!Number.isSafeInteger(n)||n<0){
+return;
+}
+
 r[k]=n;
+
 let tr=el.closest("tr");
+
 tr.classList.toggle("active",r.q>0);
-tr.lastElementChild.textContent=money(r.q*r.p*1000);
+
+tr.lastElementChild.textContent=
+money(r.q*r.p*1000);
+
 totals();
+
 save();
+
 }
 
 function togglePrice(){
+
 show=!show;
+
 $("right").classList.toggle("hide",!show);
-$("pb").textContent=show?"ẨN BẢNG GIÁ":"HIỆN BẢNG GIÁ";
+
+$("pb").textContent=
+show?"ẨN BẢNG GIÁ":"HIỆN BẢNG GIÁ";
+
 }
 
 function toggleFilter(){
+
 filter=!filter;
-$("fb").textContent=filter?"HIỆN TẤT CẢ 39 MÃ":"CHỈ HIỆN MÃ CÓ ĐƠN";
+
+$("fb").textContent=
+filter?"HIỆN TẤT CẢ 39 MÃ":
+"CHỈ HIỆN MÃ CÓ ĐƠN";
+
 render();
+
 }
 
 async function copy(s){
+
 try{
+
 await navigator.clipboard.writeText(s);
+
 $("msg").textContent="Đã sao chép!";
+
 }catch(e){
-$("msg").textContent="Trình duyệt không cho phép sao chép.";
+
+let t=document.createElement("textarea");
+
+t.value=s;
+
+t.style.position="fixed";
+
+t.style.opacity="0";
+
+document.body.append(t);
+
+t.select();
+
+try{
+
+let ok=document.execCommand("copy");
+
+$("msg").textContent=
+ok?"Đã sao chép!":"Không thể sao chép.";
+
+}catch(err){
+
+$("msg").textContent="Không thể sao chép.";
+
 }
+
+t.remove();
+
+}
+
 }
 
 function copyTotal(){
-copy(rows.filter(r=>r.q>0).map(r=>r.c+" "+r.q+" = "+money(r.q*r.p*1000)).join("\n")+"\n"+$("summary").textContent);
+
+copy(
+
+rows.filter(r=>r.q>0)
+.map(r=>
+r.label+" "+r.q+" = "+money(r.q*r.p*1000)
+).join("\n")
+
++"\n"+$("summary").textContent
+
+);
+
 }
 
 function copyPrice(){
-copy(rows.map(r=>r.c+" "+r.p).join("\n"));
+
+copy(
+
+rows.map(r=>
+r.label+" "+money(r.p*1000)
+).join("\n")
+
+);
+
 }
 
 function resetQty(){
-if(!confirm("Xóa toàn bộ số lượng, giữ nguyên giá?"))return;
+
+if(!confirm("Xóa toàn bộ số lượng, giữ nguyên giá?")){
+return;
+}
+
 rows.forEach(r=>r.q=0);
+
 history=[];
+
 save();
+
 render();
-$("msg").textContent="Đã xóa số lượng.";
+
+$("msg").textContent=
+"Đã xóa số lượng, giữ nguyên giá.";
+
 }
 
 render();
+
 check();
+
 document.body.classList.add("ready");
+
 </script>
 </body>
 </html>
