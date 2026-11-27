@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TOOL  MÃ - PC PRO</title>
+<title>TOOL 39 MÃ - PC PRO</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;padding:10px;background:#eaf3ff;font:14px Arial;color:#17365b}
@@ -13,33 +13,36 @@ main{display:grid;grid-template-columns:30fr 70fr;gap:10px}
 section{background:white;border-radius:12px;padding:10px;min-width:0}
 .editor{position:relative;height:240px;border:2px solid #b8d4fa;border-radius:8px;overflow:hidden}
 textarea,pre{position:absolute;inset:0;margin:0;padding:10px;width:100%;height:100%;border:0;font:15px/23px monospace;white-space:pre-wrap;overflow-wrap:break-word;overflow:auto}
-textarea{background:transparent;color:transparent;caret-color:black;resize:none;outline:none}
+textarea{background:transparent;color:black;caret-color:black;resize:none;outline:none}
+.ready textarea{color:transparent}
 pre{pointer-events:none}
-.good{color:#008c40}.bad{color:#e02020}
+.good{color:#008c40}
+.bad{color:#e02020}
 .bar{display:flex;gap:6px;margin:8px 0;justify-content:space-between}
 button{flex:1;border:0;border-radius:7px;padding:9px 5px;background:#1465d5;color:white;font-size:11px;font-weight:bold;cursor:pointer}
 button:disabled{background:#9ca3af}
-.red{background:#dc2626}.green{background:#079447}
+.red{background:#dc2626}
+.green{background:#079447}
 .total{background:linear-gradient(1deg,#1689ff,#1643b6);color:white;text-align:center;padding:13px;border-radius:10px;margin-top:10px;font-weight:bold}
 .cash{background:linear-gradient(1deg,#20ba72,#08713c)}
 strong{display:block;font-size:30px;margin-top:7px}
 .tables{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:12px}
 th{background:#1465d5;color:white;height:27px}
-td{text-align:center;height:25px;border-bottom:1px solid #dce6f2}
+td{text-align:center;height:28px;border-bottom:1px solid #dce6f2;overflow-wrap:anywhere}
 td:first-child{font-weight:bold}
 td:last-child,th:last-child{width:34%}
 .active{background:#d9f8e3;color:#08783b}
-input{width:90%;max-width:70px;height:21px;text-align:center;border:1px solid #cbd9e9;border-radius:4px}
+input{width:90%;max-width:80px;height:23px;text-align:center;border:1px solid #cbd9e9;border-radius:4px}
 .hide .price{display:none}
 footer{background:#eaf3ff;padding:9px;margin-top:8px;border-radius:6px;font-weight:bold}
 #msg{min-height:18px;font-size:12px}
 @media(max-width:900px){main{grid-template-columns:1fr}}
-@media(max-width:500px){table,input,button{font-size:10px}section{padding:6px}h1{font-size:20px}}
+@media(max-width:500px){table,input,button{font-size:10px}section{padding:6px}h1{font-size:20px}.tables{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<h1>TOOL TỔNG TIỀN  MÃ – PC PRO</h1>
+<h1>TOOL TỔNG TIỀN 39 MÃ – PC PRO</h1>
 <main>
 <section>
 <b>NHẬP DANH SÁCH ĐƠN</b>
@@ -65,8 +68,14 @@ footer{background:#eaf3ff;padding:9px;margin-top:8px;border-radius:6px;font-weig
 <button id="fb" onclick="toggleFilter()">CHỈ HIỆN MÃ CÓ ĐƠN</button>
 </div>
 <div class="tables">
-<table><thead><tr><th>MÃ</th><th class="price">GIÁ</th><th>SỐ LƯỢNG</th><th>THÀNH TIỀN</th></tr></thead><tbody id="a"></tbody></table>
-<table><thead><tr><th>MÃ</th><th class="price">GIÁ</th><th>SỐ LƯỢNG</th><th>THÀNH TIỀN</th></tr></thead><tbody id="b"></tbody></table>
+<table>
+<thead><tr><th>MÃ</th><th class="price">GIÁ</th><th>SỐ LƯỢNG</th><th>THÀNH TIỀN</th></tr></thead>
+<tbody id="a"></tbody>
+</table>
+<table>
+<thead><tr><th>MÃ</th><th class="price">GIÁ</th><th>SỐ LƯỢNG</th><th>THÀNH TIỀN</th></tr></thead>
+<tbody id="b"></tbody>
+</table>
 </div>
 <footer id="summary"></footer>
 <div class="bar">
@@ -78,40 +87,109 @@ footer{background:#eaf3ff;padding:9px;margin-top:8px;border-radius:6px;font-weig
 </main>
 <script>
 const $=id=>document.getElementById(id);
-const codes="VP LK|VP SHOP|PV|MB|MSB|MSB QD|LP|TP|VC|MBV|BAC A 0 GD|KB|SHB|GP 0 GD|GP QD|GP 0 RUT|VIB THE|VIB 0 THE|TECH|VIKKI|KIS|HD 0 GD|HD CO GD|SEA|SCB|VB 0 GD|VB CO GD|VIET A 0 GD|VIET A 0 RUT|VIET A DL|BIDV|TPS|SSI|TCI|BV|PG|WR|HL|ACB".split("|");
-const prices=[100,25,100,75,,60,,50,30,30,20,25,40,17,40,70,,25,25,17,20,17,20,0,0,17,20,17,70,0,15,0,0,0,0,0,0,0,0];
-let rows=codes.map((c,i)=>({c,p:prices[i],q:0}));
+const catalog=[
+["VP LK",100],
+["VP SHOP",25],
+["PV",100],
+["MB",75],
+["MSB",35],
+["MSB QD",60],
+["LP",35],
+["TP",50],
+["VC",30],
+["MBV",30],
+["BAC A 0 GD",20],
+["KB",25],
+["SHB",40],
+["GP 0 GD",17],
+["GP QD",40],
+["GP 0 RUT",70],
+["VIB THE",35],
+["VIB 0 THE",25],
+["TECH",25],
+["VIKKI",17],
+["KIS",20],
+["HD 0 GD",17],
+["HD CO GD",20],
+["SEA",0],
+["SCB",0],
+["VB 0 GD",17],
+["VB CO GD",20],
+["VIET A 0 GD",17],
+["VIET A 0 RUT",70],
+["VIET A DL",0],
+["BIDV",15],
+["TPS",0],
+["SSI",0],
+["TCI",0],
+["BV",0],
+["PG",0],
+["WR",0],
+["HL",0],
+["ACB",0]
+];
+const codes=catalog.map(r=>r[0]);
+const sortedCodes=[...codes].sort((a,b)=>b.length-a.length);
+const storageKey="TOOLPC39V1";
+let rows=catalog.map(([c,p])=>({c,p,q:0}));
 let history=[],filter=false,show=false;
+
 try{
-let s=JSON.parse(localStorage.getItem("TOOLPCNEW"));
-if(s&&s.rows.length===39){rows=s.rows;history=s.history||[]}}catch(e){}
+let s=JSON.parse(localStorage.getItem(storageKey));
+if(s&&Array.isArray(s.rows)){
+rows.forEach(r=>{
+let old=s.rows.find(x=>x.c===r.c);
+if(old){
+if(Number.isSafeInteger(old.p)&&old.p>=0)r.p=old.p;
+if(Number.isSafeInteger(old.q)&&old.q>=0)r.q=old.q;
+}
+});
+history=Array.isArray(s.history)?s.history:[];
+}
+}catch(e){}
+
 function save(){
-try{localStorage.setItem("TOOLPCNEW",JSON.stringify({rows,history}))}catch(e){}
+try{
+localStorage.setItem(storageKey,JSON.stringify({rows,history}));
+}catch(e){
+$("msg").textContent="Không lưu được dữ liệu trên trình duyệt.";
 }
+}
+
 const money=n=>n.toLocaleString("vi-VN")+"đ";
-function parse(s){
-  s=s.trim().toUpperCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g,"")
-    .replace(/Đ/g,"D")
-    .replace(/\s+/g," ")
-    .replace(/QUA DEM/g,"QD")
-    .replace(/DAT LICH/g,"DL");
-  for(const c of [...codes].sort((a,b)=>b.length-a.length)){
-    let m=s.match(new RegExp("^"+c+"\\s*[:X-]?\\s*(\\d+)$"));
-    if(!m)m=s.match(new RegExp("^(\\d+)\\s*[:X-]?\\s*"+c+"$"));
-    if(m){
-      let q=Number(m[1]);
-      if(Number.isSafeInteger(q)&&q>0)return {c,q};
-    }
-  }
-  return null;
+
+function normalize(s){
+return s.trim().toUpperCase()
+.normalize("NFD")
+.replace(/[\u0300-\u036f]/g,"")
+.replace(/Đ/g,"D")
+.replace(/\s+/g," ")
+.replace(/QUA DEM/g,"QD")
+.replace(/DAT LICH/g,"DL");
 }
-function lines(){return $("entry").value.split("\n")}
+
+function parse(s){
+s=normalize(s);
+for(const c of sortedCodes){
+let m=s.match(new RegExp("^"+c+"\\s*[:X-]?\\s*(\\d+)$"));
+if(!m)m=s.match(new RegExp("^(\\d+)\\s*[:X-]?\\s*"+c+"$"));
+if(m){
+let q=Number(m[1]);
+if(Number.isSafeInteger(q)&&q>0)return {c,q};
+}
+}
+return null;
+}
+
+function lines(){
+return $("entry").value.split("\n");
+}
+
 function sync(){
 $("paint").scrollTop=$("entry").scrollTop;
 $("paint").scrollLeft=$("entry").scrollLeft;
 }
+
 function check(){
 let g=0,b=0;
 $("paint").replaceChildren();
@@ -131,12 +209,15 @@ $("err").textContent=b;
 $("add").disabled=b>0||g===0;
 sync();
 }
+
 $("entry").oninput=check;
 $("entry").onscroll=sync;
+
 function clean(){
 $("entry").value=lines().filter(l=>parse(l)).join("\n");
 check();
 }
+
 function accumulate(){
 let data=lines().filter(l=>l.trim()).map(parse);
 if(!data.length||data.some(p=>!p))return;
@@ -151,8 +232,11 @@ rows.forEach(r=>r.q+=sums[r.c]||0);
 history.push(key);
 $("entry").value="";
 $("msg").textContent="Cộng dồn thành công!";
-save();render();check();
+save();
+render();
+check();
 }
+
 function totals(){
 let q=rows.reduce((s,r)=>s+r.q,0);
 let t=rows.reduce((s,r)=>s+r.q*r.p*1000,0);
@@ -160,38 +244,48 @@ $("qty").textContent=q.toLocaleString("vi-VN");
 $("cash").textContent=money(t);
 $("summary").textContent="TỔNG ĐƠN: "+q+" | TỔNG TIỀN: "+money(t);
 }
-[rows.slice(0,20),rows.slice(20)].forEach((group,i)=>{[rows.slice(0,18),rows.slice(18)].forEach((group,i)=>{
+
+function render(){
+[rows.slice(0,20),rows.slice(20)].forEach((group,i)=>{
 $(i?"b":"a").innerHTML=group.filter(r=>!filter||r.q>0).map(r=>`
 <tr class="${r.q>0?"active":""}">
 <td>${r.c}</td>
-<td class="price"><input inputmode="numeric" maxlength="6" value="${r.p}" oninput="update('${r.c}','p',this)" onblur="this.value=rows.find(r=>r.c==='${r.c}').p"></td>
-<td><input inputmode="numeric" value="${r.q}" oninput="update('${r.c}','q',this)" onblur="this.value=rows.find(r=>r.c==='${r.c}').q"></td>
+<td class="price">
+<input inputmode="numeric" maxlength="6" value="${r.p}" oninput="update('${r.c}','p',this)" onblur="this.value=rows.find(r=>r.c==='${r.c}').p">
+</td>
+<td>
+<input inputmode="numeric" maxlength="9" value="${r.q}" oninput="update('${r.c}','q',this)" onblur="this.value=rows.find(r=>r.c==='${r.c}').q">
+</td>
 <td>${money(r.q*r.p*1000)}</td>
 </tr>`).join("");
 });
 totals();
 }
+
 function update(c,k,el){
 let r=rows.find(r=>r.c===c);
 let n=Number(el.value);
 if(!Number.isSafeInteger(n)||n<0)return;
-if(k==="p"&&n<0)return;
 r[k]=n;
 let tr=el.closest("tr");
 tr.classList.toggle("active",r.q>0);
 tr.lastElementChild.textContent=money(r.q*r.p*1000);
-totals();save();
+totals();
+save();
 }
+
 function togglePrice(){
 show=!show;
 $("right").classList.toggle("hide",!show);
 $("pb").textContent=show?"ẨN BẢNG GIÁ":"HIỆN BẢNG GIÁ";
 }
+
 function toggleFilter(){
 filter=!filter;
-$("fb").textContent=filter?"HIỆN TẤT CẢ  MÃ":"CHỈ HIỆN MÃ CÓ ĐƠN";
+$("fb").textContent=filter?"HIỆN TẤT CẢ 39 MÃ":"CHỈ HIỆN MÃ CÓ ĐƠN";
 render();
 }
+
 async function copy(s){
 try{
 await navigator.clipboard.writeText(s);
@@ -200,21 +294,27 @@ $("msg").textContent="Đã sao chép!";
 $("msg").textContent="Trình duyệt không cho phép sao chép.";
 }
 }
+
 function copyTotal(){
 copy(rows.filter(r=>r.q>0).map(r=>r.c+" "+r.q+" = "+money(r.q*r.p*1000)).join("\n")+"\n"+$("summary").textContent);
 }
+
 function copyPrice(){
 copy(rows.map(r=>r.c+" "+r.p).join("\n"));
 }
+
 function resetQty(){
 if(!confirm("Xóa toàn bộ số lượng, giữ nguyên giá?"))return;
 rows.forEach(r=>r.q=0);
 history=[];
-save();render();
+save();
+render();
 $("msg").textContent="Đã xóa số lượng.";
 }
+
 render();
 check();
+document.body.classList.add("ready");
 </script>
 </body>
 </html>
