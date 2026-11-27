@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TOOL 35 MÃ - PC PRO</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:10px;background:#eaf3ff;font:14px Arial;color:#17365b}
+h1{text-align:center;color:#075dcc;font-size:25px;margin:4px 0 12px}
+main{display:grid;grid-template-columns:30fr 70fr;gap:10px}
+section{background:white;border-radius:12px;padding:10px;min-width:0}
+.editor{position:relative;height:240px;border:2px solid #b8d4fa;border-radius:8px;overflow:hidden}
+textarea,pre{position:absolute;inset:0;margin:0;padding:10px;width:100%;height:100%;border:0;font:15px/23px monospace;white-space:pre-wrap;overflow-wrap:break-word;overflow:auto}
+textarea{background:transparent;color:transparent;caret-color:black;resize:none;outline:none}
+pre{pointer-events:none}
+.good{color:#008c40}.bad{color:#e02020}
+.bar{display:flex;gap:6px;margin:8px 0;justify-content:space-between}
+button{flex:1;border:0;border-radius:7px;padding:9px 5px;background:#1465d5;color:white;font-size:11px;font-weight:bold;cursor:pointer}
+button:disabled{background:#9ca3af}
+.red{background:#dc2626}.green{background:#079447}
+.total{background:linear-gradient(135deg,#1689ff,#1643b6);color:white;text-align:center;padding:13px;border-radius:10px;margin-top:10px;font-weight:bold}
+.cash{background:linear-gradient(135deg,#20ba72,#08713c)}
+strong{display:block;font-size:30px;margin-top:7px}
+.tables{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:12px}
+th{background:#1465d5;color:white;height:27px}
+td{text-align:center;height:25px;border-bottom:1px solid #dce6f2}
+td:first-child{font-weight:bold}
+td:last-child,th:last-child{width:34%}
+.active{background:#d9f8e3;color:#08783b}
+input{width:90%;max-width:70px;height:21px;text-align:center;border:1px solid #cbd9e9;border-radius:4px}
+.hide .price{display:none}
+footer{background:#eaf3ff;padding:9px;margin-top:8px;border-radius:6px;font-weight:bold}
+#msg{min-height:18px;font-size:12px}
+@media(max-width:900px){main{grid-template-columns:1fr}}
+@media(max-width:500px){table,input,button{font-size:10px}section{padding:6px}h1{font-size:20px}}
+</style>
+</head>
+<body>
+<h1>TOOL TỔNG TIỀN 35 MÃ – PC PRO</h1>
+<main>
+<section>
+<b>NHẬP DANH SÁCH ĐƠN</b>
+<div class="editor">
+<pre id="paint"></pre>
+<textarea id="entry" placeholder="Dán danh sách vào đây..." spellcheck="false"></textarea>
+</div>
+<div class="bar">
+<b class="good">Đơn đúng: <span id="ok">0</span></b>
+<b class="bad">Dòng sai: <span id="err">0</span></b>
+</div>
+<div class="bar">
+<button class="red" onclick="clean()">XÓA HẾT DÒNG ĐỎ</button>
+<button class="green" id="add" onclick="accumulate()" disabled>KIỂM TRA & CỘNG DỒN</button>
+</div>
+<div id="msg"></div>
+<div class="total">TỔNG SỐ ĐƠN<strong id="qty">0</strong></div>
+<div class="total cash">TỔNG SỐ TIỀN<strong id="cash">0đ</strong></div>
+</section>
+<section id="right" class="hide">
+<div class="bar">
+<button id="pb" onclick="togglePrice()">HIỆN BẢNG GIÁ</button>
+<button id="fb" onclick="toggleFilter()">CHỈ HIỆN MÃ CÓ ĐƠN</button>
+</div>
+<div class="tables">
+<table><thead><tr><th>MÃ</th><th class="price">GIÁ</th><th>SỐ LƯỢNG</th><th>THÀNH TIỀN</th></tr></thead><tbody id="a"></tbody></table>
+<table><thead><tr><th>MÃ</th><th class="price">GIÁ</th><th>SỐ LƯỢNG</th><th>THÀNH TIỀN</th></tr></thead><tbody id="b"></tbody></table>
+</div>
+<footer id="summary"></footer>
+<div class="bar">
+<button class="green" onclick="copyTotal()">SAO CHÉP TỔNG</button>
+<button onclick="copyPrice()">SAO CHÉP GIÁ</button>
+<button class="red" onclick="resetQty()">XÓA SỐ LƯỢNG GIỮ GIÁ</button>
+</div>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const codes="VCB CTG BIDV MB VP TP LP TCB MSB SHB ACB STB HDB VIB NAB ABB BAB BVB KLB NCB PGB SGB VAB VBB PV GP VIKKI MBV NEO SCB BAOVIET KB KIS SSI KAFI".split(" ");
+let rows=codes.map((c,i)=>({c,p:15+i*2,q:0}));
+let history=[],filter=false,show=false;
+try{
+let s=JSON.parse(localStorage.getItem("TOOLPC35NEW"));
+if(s&&s.rows.length===35){rows=s.rows;history=s.history||[]}
+}catch(e){}
+function save(){
+try{localStorage.setItem("TOOLPC35NEW",JSON.stringify({rows,history}))}catch(e){}
+}
+const money=n=>n.toLocaleString("vi-VN")+"đ";
+function parse(s){
+s=s.trim().toUpperCase();
+let m=s.match(/^([A-Z]+)\s*[:X×-]?\s*(\d+)$/);
+let c,q;
+if(m){c=m[1];q=Number(m[2])}
+else{
+m=s.match(/^(\d+)\s*[:X×-]?\s*([A-Z]+)$/);
+if(!m)return null;
+c=m[2];q=Number(m[1]);
+}
+return codes.includes(c)&&Number.isSafeInteger(q)&&q>0?{c,q}:null;
+}
+function lines(){return $("entry").value.split("\n")}
+function sync(){
+$("paint").scrollTop=$("entry").scrollTop;
+$("paint").scrollLeft=$("entry").scrollLeft;
+}
+function check(){
+let g=0,b=0;
+$("paint").replaceChildren();
+lines().forEach((line,i)=>{
+if(i)$("paint").append("\n");
+let p=parse(line);
+let span=document.createElement("span");
+span.textContent=line;
+span.className=p?"good":"bad";
+$("paint").append(span);
+if(p)g+=p.q;
+else if(line.trim())b++;
+});
+$("paint").append("\n");
+$("ok").textContent=g;
+$("err").textContent=b;
+$("add").disabled=b>0||g===0;
+sync();
+}
+$("entry").oninput=check;
+$("entry").onscroll=sync;
+function clean(){
+$("entry").value=lines().filter(l=>parse(l)).join("\n");
+check();
+}
+function accumulate(){
+let data=lines().filter(l=>l.trim()).map(parse);
+if(!data.length||data.some(p=>!p))return;
+let sums={};
+data.forEach(p=>sums[p.c]=(sums[p.c]||0)+p.q);
+let key=codes.map(c=>sums[c]||0).join(",");
+if(history.includes(key)){
+$("msg").textContent="Danh sách đã cộng trước đó!";
+return;
+}
+rows.forEach(r=>r.q+=sums[r.c]||0);
+history.push(key);
+$("entry").value="";
+$("msg").textContent="Cộng dồn thành công!";
+save();render();check();
+}
+function totals(){
+let q=rows.reduce((s,r)=>s+r.q,0);
+let t=rows.reduce((s,r)=>s+r.q*r.p*1000,0);
+$("qty").textContent=q.toLocaleString("vi-VN");
+$("cash").textContent=money(t);
+$("summary").textContent="TỔNG ĐƠN: "+q+" | TỔNG TIỀN: "+money(t);
+}
+function render(){
+[rows.slice(0,18),rows.slice(18)].forEach((group,i)=>{
+$(i?"b":"a").innerHTML=group.filter(r=>!filter||r.q>0).map(r=>`
+<tr class="${r.q>0?"active":""}">
+<td>${r.c}</td>
+<td class="price"><input inputmode="numeric" maxlength="2" value="${r.p}" oninput="update('${r.c}','p',this)" onblur="this.value=rows.find(r=>r.c==='${r.c}').p"></td>
+<td><input inputmode="numeric" value="${r.q}" oninput="update('${r.c}','q',this)" onblur="this.value=rows.find(r=>r.c==='${r.c}').q"></td>
+<td>${money(r.q*r.p*1000)}</td>
+</tr>`).join("");
+});
+totals();
+}
+function update(c,k,el){
+let r=rows.find(r=>r.c===c);
+let n=Number(el.value);
+if(!Number.isSafeInteger(n)||n<0)return;
+if(k==="p"&&(n<10||n>99))return;
+r[k]=n;
+let tr=el.closest("tr");
+tr.classList.toggle("active",r.q>0);
+tr.lastElementChild.textContent=money(r.q*r.p*1000);
+totals();save();
+}
+function togglePrice(){
+show=!show;
+$("right").classList.toggle("hide",!show);
+$("pb").textContent=show?"ẨN BẢNG GIÁ":"HIỆN BẢNG GIÁ";
+}
+function toggleFilter(){
+filter=!filter;
+$("fb").textContent=filter?"HIỆN TẤT CẢ 35 MÃ":"CHỈ HIỆN MÃ CÓ ĐƠN";
+render();
+}
+async function copy(s){
+try{
+await navigator.clipboard.writeText(s);
+$("msg").textContent="Đã sao chép!";
+}catch(e){
+$("msg").textContent="Trình duyệt không cho phép sao chép.";
+}
+}
+function copyTotal(){
+copy(rows.filter(r=>r.q>0).map(r=>r.c+" "+r.q+" = "+money(r.q*r.p*1000)).join("\n")+"\n"+$("summary").textContent);
+}
+function copyPrice(){
+copy(rows.map(r=>r.c+" "+r.p).join("\n"));
+}
+function resetQty(){
+if(!confirm("Xóa toàn bộ số lượng, giữ nguyên giá?"))return;
+rows.forEach(r=>r.q=0);
+history=[];
+save();render();
+$("msg").textContent="Đã xóa số lượng.";
+}
+render();
+check();
+</script>
+</body>
+</html>
