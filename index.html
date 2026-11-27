@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TOOL 35 MÃ - PC PRO</title>
+<title>TOOL  MÃ - PC PRO</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;padding:10px;background:#eaf3ff;font:14px Arial;color:#17365b}
@@ -20,8 +20,8 @@ pre{pointer-events:none}
 button{flex:1;border:0;border-radius:7px;padding:9px 5px;background:#1465d5;color:white;font-size:11px;font-weight:bold;cursor:pointer}
 button:disabled{background:#9ca3af}
 .red{background:#dc2626}.green{background:#079447}
-.total{background:linear-gradient(135deg,#1689ff,#1643b6);color:white;text-align:center;padding:13px;border-radius:10px;margin-top:10px;font-weight:bold}
-.cash{background:linear-gradient(135deg,#20ba72,#08713c)}
+.total{background:linear-gradient(1deg,#1689ff,#1643b6);color:white;text-align:center;padding:13px;border-radius:10px;margin-top:10px;font-weight:bold}
+.cash{background:linear-gradient(1deg,#20ba72,#08713c)}
 strong{display:block;font-size:30px;margin-top:7px}
 .tables{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:12px}
@@ -39,7 +39,7 @@ footer{background:#eaf3ff;padding:9px;margin-top:8px;border-radius:6px;font-weig
 </style>
 </head>
 <body>
-<h1>TOOL TỔNG TIỀN 35 MÃ – PC PRO</h1>
+<h1>TOOL TỔNG TIỀN  MÃ – PC PRO</h1>
 <main>
 <section>
 <b>NHẬP DANH SÁCH ĐƠN</b>
@@ -78,28 +78,34 @@ footer{background:#eaf3ff;padding:9px;margin-top:8px;border-radius:6px;font-weig
 </main>
 <script>
 const $=id=>document.getElementById(id);
-const codes="VCB CTG BIDV MB VP TP LP TCB MSB SHB ACB STB HDB VIB NAB ABB BAB BVB KLB NCB PGB SGB VAB VBB PV GP VIKKI MBV NEO SCB BAOVIET KB KIS SSI KAFI".split(" ");
-let rows=codes.map((c,i)=>({c,p:15+i*2,q:0}));
+const codes="VP LK|VP SHOP|PV|MB|MSB|MSB QD|LP|TP|VC|MBV|BAC A 0 GD|KB|SHB|GP 0 GD|GP QD|GP 0 RUT|VIB THE|VIB 0 THE|TECH|VIKKI|KIS|HD 0 GD|HD CO GD|SEA|SCB|VB 0 GD|VB CO GD|VIET A 0 GD|VIET A 0 RUT|VIET A DL|BIDV|TPS|SSI|TCI|BV|PG|WR|HL|ACB".split("|");
+const prices=[100,25,100,75,,60,,50,30,30,20,25,40,17,40,70,,25,25,17,20,17,20,0,0,17,20,17,70,0,15,0,0,0,0,0,0,0,0];
+let rows=codes.map((c,i)=>({c,p:prices[i],q:0}));
 let history=[],filter=false,show=false;
 try{
-let s=JSON.parse(localStorage.getItem("TOOLPC35NEW"));
-if(s&&s.rows.length===35){rows=s.rows;history=s.history||[]}
-}catch(e){}
+let s=JSON.parse(localStorage.getItem("TOOLPCNEW"));
+if(s&&s.rows.length===39){rows=s.rows;history=s.history||[]}}catch(e){}
 function save(){
-try{localStorage.setItem("TOOLPC35NEW",JSON.stringify({rows,history}))}catch(e){}
+try{localStorage.setItem("TOOLPCNEW",JSON.stringify({rows,history}))}catch(e){}
 }
 const money=n=>n.toLocaleString("vi-VN")+"đ";
 function parse(s){
-s=s.trim().toUpperCase();
-let m=s.match(/^([A-Z]+)\s*[:X×-]?\s*(\d+)$/);
-let c,q;
-if(m){c=m[1];q=Number(m[2])}
-else{
-m=s.match(/^(\d+)\s*[:X×-]?\s*([A-Z]+)$/);
-if(!m)return null;
-c=m[2];q=Number(m[1]);
-}
-return codes.includes(c)&&Number.isSafeInteger(q)&&q>0?{c,q}:null;
+  s=s.trim().toUpperCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .replace(/Đ/g,"D")
+    .replace(/\s+/g," ")
+    .replace(/QUA DEM/g,"QD")
+    .replace(/DAT LICH/g,"DL");
+  for(const c of [...codes].sort((a,b)=>b.length-a.length)){
+    let m=s.match(new RegExp("^"+c+"\\s*[:X-]?\\s*(\\d+)$"));
+    if(!m)m=s.match(new RegExp("^(\\d+)\\s*[:X-]?\\s*"+c+"$"));
+    if(m){
+      let q=Number(m[1]);
+      if(Number.isSafeInteger(q)&&q>0)return {c,q};
+    }
+  }
+  return null;
 }
 function lines(){return $("entry").value.split("\n")}
 function sync(){
@@ -154,8 +160,7 @@ $("qty").textContent=q.toLocaleString("vi-VN");
 $("cash").textContent=money(t);
 $("summary").textContent="TỔNG ĐƠN: "+q+" | TỔNG TIỀN: "+money(t);
 }
-function render(){
-[rows.slice(0,18),rows.slice(18)].forEach((group,i)=>{
+[rows.slice(0,20),rows.slice(20)].forEach((group,i)=>{[rows.slice(0,18),rows.slice(18)].forEach((group,i)=>{
 $(i?"b":"a").innerHTML=group.filter(r=>!filter||r.q>0).map(r=>`
 <tr class="${r.q>0?"active":""}">
 <td>${r.c}</td>
@@ -184,7 +189,7 @@ $("pb").textContent=show?"ẨN BẢNG GIÁ":"HIỆN BẢNG GIÁ";
 }
 function toggleFilter(){
 filter=!filter;
-$("fb").textContent=filter?"HIỆN TẤT CẢ 35 MÃ":"CHỈ HIỆN MÃ CÓ ĐƠN";
+$("fb").textContent=filter?"HIỆN TẤT CẢ  MÃ":"CHỈ HIỆN MÃ CÓ ĐƠN";
 render();
 }
 async function copy(s){
